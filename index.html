@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="theme-color" content="#0f0f1a"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>VibhillionAI Tasks</title>
+<link rel="manifest" href="manifest.json"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&family=Nunito:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0f0f1a;
+  --surface:#1a1a2e;
+  --surface2:#22223a;
+  --surface3:#2a2a42;
+  --accent:#e94560;
+  --accent2:#ff6b6b;
+  --text:#f0f0f8;
+  --text2:#a0a0c0;
+  --text3:#606080;
+  --border:#2e2e4e;
+  --success:#22c55e;
+  --warning:#f59e0b;
+  --info:#3b82f6;
+  --radius:12px;
+  --radius-sm:8px;
+  --radius-lg:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;font-size:15px}
+body{display:flex;flex-direction:column;min-height:100vh}
+
+/* HEADER */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-family:'Baloo 2',sans-serif;font-size:18px;font-weight:700;color:var(--text)}
+.logo span{color:var(--accent)}
+.header-right{display:flex;gap:8px;align-items:center}
+.install-btn{display:none;padding:6px 12px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:'Nunito',sans-serif}
+
+/* TABS */
+.tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab-btn{flex:1;min-width:80px;padding:14px 8px;font-size:13px;font-weight:600;color:var(--text2);background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* MAIN */
+.main{flex:1;padding:16px;max-width:600px;margin:0 auto;width:100%}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.card-title{font-family:'Baloo 2',sans-serif;font-size:15px;font-weight:600;color:var(--text)}
+
+/* FORM */
+label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.04em}
+input,select,textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;color:var(--text);font-size:14px;font-family:'Nunito',sans-serif;outline:none;transition:border 0.2s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+select option{background:var(--surface2)}
+textarea{resize:vertical;min-height:70px;line-height:1.5}
+.field{margin-bottom:12px}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* BUTTONS */
+.btn{padding:10px 18px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;font-family:'Nunito',sans-serif;border:1px solid var(--border);background:var(--surface2);color:var(--text);transition:all 0.15s}
+.btn:active{transform:scale(0.97)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:#c73650}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--text2)}
+.btn-ghost:hover{color:var(--text);background:var(--surface3)}
+.btn-danger{color:#ff6b6b;border-color:#ff6b6b33;background:transparent}
+.btn-success-outline{color:var(--success);border-color:#22c55e44;background:transparent}
+.btn-full{width:100%}
+
+/* TASK CARD */
+.task-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px;transition:border-color 0.2s}
+.task-card.done{opacity:0.5;border-color:transparent}
+.task-card:not(.done):hover{border-color:var(--accent)}
+.tc-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.tc-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all 0.2s}
+.tc-check.done-check{background:var(--success);border-color:var(--success)}
+.tc-title{font-size:15px;font-weight:600;line-height:1.4;flex:1}
+.tc-title.done-text{text-decoration:line-through;color:var(--text2)}
+.tc-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.badge{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:700;letter-spacing:0.02em}
+.badge-assignee{background:#3b82f620;color:#60a5fa}
+.badge-high{background:#ef444420;color:#f87171}
+.badge-medium{background:#f59e0b20;color:#fbbf24}
+.badge-low{background:#22c55e20;color:#4ade80}
+.badge-done{background:#22c55e20;color:#4ade80}
+.badge-pending{background:#3b82f620;color:#60a5fa}
+.badge-overdue{background:#ef444430;color:#f87171}
+.tc-desc{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.tc-footer{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tc-date{font-size:11px;color:var(--text3);margin-left:auto}
+.tc-actions{display:flex;gap:6px;margin-left:auto}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center}
+.stat-num{font-family:'Baloo 2',sans-serif;font-size:24px;font-weight:700;color:var(--text)}
+.stat-lbl{font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:0.04em}
+
+/* EMPTY */
+.empty{text-align:center;padding:40px 20px;color:var(--text3)}
+.empty-icon{font-size:40px;margin-bottom:10px}
+.empty-msg{font-size:14px}
+
+/* MEMBER CHIP */
+.member-chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);padding:5px 10px;border-radius:20px;font-size:13px;font-weight:600}
+.member-chip-remove{background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;line-height:1;padding:0;display:flex;align-items:center}
+.member-chip-remove:hover{color:var(--accent)}
+
+/* FILTER */
+.filter-row{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.filter-row::-webkit-scrollbar{display:none}
+.filter-pill{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text2);font-family:'Nunito',sans-serif;white-space:nowrap;transition:all 0.15s}
+.filter-pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* TOAST */
+.toast-wrap{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none}
+.toast{background:#1e1e3a;border:1px solid var(--border);color:var(--text);padding:10px 20px;border-radius:var(--radius);font-size:13px;font-weight:600;opacity:0;transition:opacity 0.3s;white-space:nowrap}
+.toast.show{opacity:1}
+
+/* SECTION LABEL */
+.section-label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px}
+
+/* MEMBER VIEW HEADER */
+.member-header{background:linear-gradient(135deg,var(--surface),var(--surface2));border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;text-align:center}
+.member-header-name{font-family:'Baloo 2',sans-serif;font-size:20px;font-weight:700;color:var(--accent)}
+.member-header-sub{font-size:13px;color:var(--text2);margin-top:4px}
+
+/* NOTIF BANNER */
+.notif-banner{background:#3b82f620;border:1px solid #3b82f640;border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:#60a5fa;display:flex;align-items:center;gap:10px;margin-bottom:14px;cursor:pointer}
+.notif-banner span{flex:1}
+
+/* DUE DATE */
+.due-badge{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:700}
+.due-today{background:#f59e0b20;color:#fbbf24}
+.due-overdue{background:#ef444420;color:#f87171}
+.due-upcoming{background:#22c55e20;color:#4ade80}
+
+/* DIVIDER */
+hr{border:none;border-top:1px solid var(--border);margin:16px 0}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:#00000088;z-index:200;align-items:center;justify-content:center;padding:16px}
+.modal-bg.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto}
+.modal-title{font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:700;margin-bottom:16px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+
+/* PROGRESS BAR */
+.progress-wrap{background:var(--surface2);border-radius:10px;height:6px;margin-top:6px;overflow:hidden}
+.progress-bar{height:100%;background:var(--accent);border-radius:10px;transition:width 0.4s}
+
+@media(max-width:400px){
+  .row-2{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo"><span>Vibhillion</span>AI Tasks</div>
+  <div class="header-right">
+    <button class="install-btn" id="install-btn" onclick="installApp()">📲 Install App</button>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="setTab('admin',this)" id="tab-admin">👑 Admin</button>
+  <button class="tab-btn" onclick="setTab('member',this)" id="tab-member">👤 My Tasks</button>
+  <button class="tab-btn" onclick="setTab('team',this)" id="tab-team">👥 Team</button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- NOTIFICATION PERMISSION BANNER -->
+  <div class="notif-banner" id="notif-banner" onclick="requestNotifPermission()" style="display:none">
+    🔔 <span>Enable push notifications to get task alerts</span>
+    <strong>Enable →</strong>
+  </div>
+
+  <!-- ===== ADMIN TAB ===== -->
+  <div id="tab-admin-content">
+
+    <div class="stats-grid" id="stats-grid"></div>
+
+    <!-- Progress -->
+    <div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px">
+        <span>Team progress</span><span id="progress-pct">0%</span>
+      </div>
+      <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+    </div>
+
+    <!-- Create Task -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">➕ New Task</div></div>
+      <div class="field"><label>Task title *</label><input id="t-title" placeholder="e.g. Write 10 MCQs on Economy"/></div>
+      <div class="field"><label>Description</label><textarea id="t-desc" placeholder="Instructions, links, details..."></textarea></div>
+      <div class="row-2">
+        <div class="field"><label>Assign to</label>
+          <select id="t-assign"><option value="">— select member —</option></select>
+        </div>
+        <div class="field"><label>Priority</label>
+          <select id="t-priority">
+            <option value="medium">🟡 Medium</option>
+            <option value="high">🔴 High</option>
+            <option value="low">🟢 Low</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label>Due date (optional)</label><input type="date" id="t-due"/></div>
+      <button class="btn btn-primary btn-full" onclick="createTask()">Create Task</button>
+    </div>
+
+    <!-- Filter + Tasks -->
+    <div class="section-label">All Tasks</div>
+    <div class="filter-row">
+      <button class="filter-pill active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-pill" onclick="setFilter('pending',this)">Pending</button>
+      <button class="filter-pill" onclick="setFilter('done',this)">Done</button>
+      <button class="filter-pill" onclick="setFilter('high',this)">🔴 High</button>
+      <button class="filter-pill" onclick="setFilter('overdue',this)">⚠️ Overdue</button>
+    </div>
+    <div id="admin-tasks"></div>
+  </div>
+
+  <!-- ===== MY TASKS TAB ===== -->
+  <div id="tab-member-content" style="display:none">
+    <div class="field">
+      <label>Select your name</label>
+      <select id="m-select" onchange="renderMemberView()">
+        <option value="">— select your name —</option>
+      </select>
+    </div>
+    <div id="member-content"></div>
+  </div>
+
+  <!-- ===== TEAM TAB ===== -->
+  <div id="tab-team-content" style="display:none">
+    <div class="card">
+      <div class="card-title" style="margin-bottom:12px">Add Member</div>
+      <div style="display:flex;gap:8px">
+        <input id="new-member" placeholder="Member name" style="flex:1" onkeydown="if(event.key==='Enter')addMember()"/>
+        <button class="btn btn-primary" onclick="addMember()">Add</button>
+      </div>
+    </div>
+    <div class="section-label">Team Members</div>
+    <div id="member-list"></div>
+
+    <hr/>
+    <div class="section-label">Reminder Settings</div>
+    <div class="card">
+      <div style="font-size:13px;color:var(--text2);margin-bottom:12px">
+        Pending tasks reminder — sends a browser notification to all members who have enabled notifications.
+      </div>
+      <div class="field">
+        <label>Reminder time (daily)</label>
+        <input type="time" id="reminder-time" value="09:00"/>
+      </div>
+      <button class="btn btn-primary" onclick="saveReminder()">Save Reminder</button>
+      <div id="reminder-status" style="font-size:12px;color:var(--text2);margin-top:8px"></div>
+    </div>
+  </div>
+
+</div><!-- end .main -->
+
+<!-- TOAST -->
+<div class="toast-wrap"><div class="toast" id="toast"></div></div>
+
+<!-- Firebase SDKs -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, push, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+// ════════════════════════════════════════════
+// 🔥 PASTE YOUR FIREBASE CONFIG HERE
+// ════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyCUHBD8qaN8jXpVVbVk-dPbzoTj4rkKcxQ",
+  authDomain: "vibhi-task.firebaseapp.com",
+  databaseURL: "https://vibhi-task-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "vibhi-task",
+  storageBucket: "vibhi-task.firebasestorage.app",
+  messagingSenderId: "8326165037",
+  appId: "1:8326165037:web:93d448c30062d0650cfea4"
+};
+// ════════════════════════════════════════════
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ── State ──────────────────────────────────
+window._tasks = {};
+window._members = [];
+window._adminFilter = 'all';
+let deferredInstallPrompt = null;
+
+// ── Firebase listeners ─────────────────────
+onValue(ref(db,'tasks'), snap => {
+  window._tasks = snap.val() || {};
+  renderAll();
+});
+
+onValue(ref(db,'members'), snap => {
+  window._members = snap.val() ? Object.values(snap.val()) : [];
+  renderMemberSelects();
+  renderMemberList();
+  renderAll();
+});
+
+// ── Helpers ────────────────────────────────
+function toast(msg, dur=2500){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), dur);
+}
+window.toast = toast;
+
+function dueBadge(due){
+  if(!due) return '';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const d = new Date(due);
+  if(d < today) return '<span class="due-badge due-overdue">⚠️ Overdue</span>';
+  if(d.toDateString()===today.toDateString()) return '<span class="due-badge due-today">📅 Due today</span>';
+  return `<span class="due-badge due-upcoming">📅 ${d.toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</span>`;
+}
+
+function isOverdue(t){
+  if(!t.due||t.status==='done') return false;
+  const today = new Date(); today.setHours(0,0,0,0);
+  return new Date(t.due) < today;
+}
+
+function priorityBadge(p){
+  return `<span class="badge badge-${p}">${p==='high'?'🔴 High':p==='medium'?'🟡 Medium':'🟢 Low'}</span>`;
+}
+
+function taskList(){
+  return Object.entries(window._tasks).map(([id,t])=>({id,...t}));
+}
+
+// ── Stats ──────────────────────────────────
+function renderStats(){
+  const all = taskList();
+  const total = all.length;
+  const done = all.filter(t=>t.status==='done').length;
+  const pending = total - done;
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-box"><div class="stat-num">${total}</div><div class="stat-lbl">Total</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--warning)">${pending}</div><div class="stat-lbl">Pending</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--success)">${done}</div><div class="stat-lbl">Done</div></div>`;
+  document.getElementById('progress-bar').style.width = pct+'%';
+  document.getElementById('progress-pct').textContent = pct+'%';
+}
+
+// ── Admin tasks ────────────────────────────
+function renderAdminTasks(){
+  const f = window._adminFilter;
+  let list = taskList();
+  if(f==='pending') list = list.filter(t=>t.status==='pending');
+  else if(f==='done') list = list.filter(t=>t.status==='done');
+  else if(f==='high') list = list.filter(t=>t.priority==='high'&&t.status!=='done');
+  else if(f==='overdue') list = list.filter(t=>isOverdue(t));
+  list.sort((a,b)=>{
+    if(a.status!==b.status) return a.status==='pending'?-1:1;
+    const po={high:0,medium:1,low:2};
+    return (po[a.priority]||1)-(po[b.priority]||1);
+  });
+  const el = document.getElementById('admin-tasks');
+  if(!list.length){
+    el.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-msg">No tasks here yet</div></div>`;
+    return;
+  }
+  el.innerHTML = list.map(t=>`
+    <div class="task-card ${t.status==='done'?'done':''}">
+      <div class="tc-top">
+        <div class="tc-check ${t.status==='done'?'done-check':''}" onclick="toggleDone('${t.id}')" title="${t.status==='done'?'Mark pending':'Mark done'}">
+          ${t.status==='done'?'<svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>':''}
+        </div>
+        <div class="tc-title ${t.status==='done'?'done-text':''}">${t.title}</div>
+      </div>
+      <div class="tc-meta">
+        ${t.assignee?`<span class="badge badge-assignee">👤 ${t.assignee}</span>`:''}
+        ${priorityBadge(t.priority)}
+        <span class="badge ${t.status==='done'?'badge-done':'badge-pending'}">${t.status==='done'?'✓ Done':'● Pending'}</span>
+        ${dueBadge(t.due)}
+      </div>
+      ${t.desc?`<div class="tc-desc">${t.desc}</div>`:''}
+      <div class="tc-footer">
+        <span class="tc-date">Created ${t.createdAt||''}</span>
+        <div class="tc-actions">
+          <button class="btn btn-sm btn-ghost" onclick="openEditModal('${t.id}')">✏️</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteTask('${t.id}')">🗑️</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ── Member view ────────────────────────────
+window.renderMemberView = function(){
+  const name = document.getElementById('m-select').value;
+  const el = document.getElementById('member-content');
+  if(!name){el.innerHTML='';return;}
+  const mine = taskList().filter(t=>t.assignee===name);
+  const pending = mine.filter(t=>t.status==='pending');
+  const done = mine.filter(t=>t.status==='done');
+  el.innerHTML = `
+    <div class="member-header">
+      <div class="member-header-name">${name}</div>
+      <div class="member-header-sub">${pending.length} pending · ${done.length} done</div>
+    </div>
+    ${!mine.length?`<div class="empty"><div class="empty-icon">🎉</div><div class="empty-msg">No tasks assigned yet</div></div>`:''}
+    ${pending.length?`<div class="section-label">Pending</div>${pending.map(t=>memberTaskCard(t)).join('')}`:''}
+    ${done.length?`<div class="section-label" style="margin-top:16px">Done</div>${done.map(t=>memberTaskCard(t)).join('')}`:''}`;
+}
+
+function memberTaskCard(t){
+  return `<div class="task-card ${t.status==='done'?'done':''}">
+    <div class="tc-top">
+      <div class="tc-check ${t.status==='done'?'done-check':''}" onclick="toggleDone('${t.id}')" title="Toggle done">
+        ${t.status==='done'?'<svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>':''}
+      </div>
+      <div class="tc-title ${t.status==='done'?'done-text':''}">${t.title}</div>
+    </div>
+    <div class="tc-meta">
+      ${priorityBadge(t.priority)}
+      ${dueBadge(t.due)}
+    </div>
+    ${t.desc?`<div class="tc-desc">${t.desc}</div>`:''}
+  </div>`;
+}
+
+// ── Member selects ─────────────────────────
+function renderMemberSelects(){
+  const opts = '<option value="">— select member —</option>' +
+    window._members.map(m=>`<option value="${m}">${m}</option>`).join('');
+  document.getElementById('t-assign').innerHTML = opts;
+  document.getElementById('m-select').innerHTML =
+    '<option value="">— select your name —</option>' +
+    window._members.map(m=>`<option value="${m}">${m}</option>`).join('');
+}
+
+// ── Member list (team tab) ─────────────────
+function renderMemberList(){
+  const el = document.getElementById('member-list');
+  if(!window._members.length){
+    el.innerHTML='<div class="empty"><div class="empty-msg">No members yet — add above</div></div>';return;
+  }
+  el.innerHTML = window._members.map((m,i)=>{
+    const mine = taskList().filter(t=>t.assignee===m);
+    const done = mine.filter(t=>t.status==='done').length;
+    return `<div class="card" style="display:flex;align-items:center;gap:12px;padding:12px 14px">
+      <div style="width:38px;height:38px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0">${m[0].toUpperCase()}</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:14px">${m}</div>
+        <div style="font-size:12px;color:var(--text2)">${mine.length} tasks · ${done} done</div>
+      </div>
+      <button class="btn btn-sm btn-danger" onclick="removeMember(${i})" title="Remove">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// ── Render all ────────────────────────────
+function renderAll(){
+  renderStats();
+  renderAdminTasks();
+  renderMemberView();
+  renderMemberList();
+}
+window.renderAll = renderAll;
+
+// ── Actions ────────────────────────────────
+window.createTask = async function(){
+  const title = document.getElementById('t-title').value.trim();
+  if(!title){toast('⚠️ Title required!');return;}
+  const assignee = document.getElementById('t-assign').value;
+  const task = {
+    title,
+    desc: document.getElementById('t-desc').value.trim(),
+    assignee,
+    priority: document.getElementById('t-priority').value,
+    due: document.getElementById('t-due').value||'',
+    status:'pending',
+    createdAt: new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})
+  };
+  await push(ref(db,'tasks'), task);
+  document.getElementById('t-title').value='';
+  document.getElementById('t-desc').value='';
+  document.getElementById('t-due').value='';
+  toast('✅ Task created!');
+  if(assignee) sendLocalNotification(`New task for ${assignee}`, task.title);
+};
+
+window.toggleDone = async function(id){
+  const t = window._tasks[id];
+  if(!t) return;
+  const newStatus = t.status==='done'?'pending':'done';
+  await update(ref(db,`tasks/${id}`),{status:newStatus});
+  toast(newStatus==='done'?'✅ Marked done!':'↩️ Marked pending');
+  if(newStatus==='done') sendLocalNotification('Task completed! 🎉', t.title);
+};
+
+window.deleteTask = async function(id){
+  if(!confirm('Delete this task?')) return;
+  await remove(ref(db,`tasks/${id}`));
+  toast('🗑️ Task deleted');
+};
+
+window.addMember = async function(){
+  const inp = document.getElementById('new-member');
+  const name = inp.value.trim();
+  if(!name){toast('Enter a name!');return;}
+  if(window._members.includes(name)){toast('Already exists!');return;}
+  const updated = [...window._members, name];
+  await set(ref(db,'members'), updated);
+  inp.value='';
+  toast(`👤 ${name} added!`);
+};
+
+window.removeMember = async function(i){
+  const name = window._members[i];
+  if(!confirm(`Remove ${name}?`)) return;
+  const updated = window._members.filter((_,j)=>j!==i);
+  await set(ref(db,'members'), updated);
+  toast(`Removed ${name}`);
+};
+
+window.setFilter = function(f, el){
+  window._adminFilter = f;
+  document.querySelectorAll('.filter-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  renderAdminTasks();
+};
+
+// ── Edit modal ─────────────────────────────
+window.openEditModal = function(id){
+  const t = window._tasks[id];
+  if(!t) return;
+  const members = window._members;
+  const modal = document.createElement('div');
+  modal.className='modal-bg open';
+  modal.innerHTML=`<div class="modal">
+    <div class="modal-title">✏️ Edit Task</div>
+    <div class="field"><label>Title</label><input id="e-title" value="${t.title}"/></div>
+    <div class="field"><label>Description</label><textarea id="e-desc">${t.desc||''}</textarea></div>
+    <div class="row-2">
+      <div class="field"><label>Assign to</label>
+        <select id="e-assign">
+          <option value="">— none —</option>
+          ${members.map(m=>`<option value="${m}" ${t.assignee===m?'selected':''}>${m}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field"><label>Priority</label>
+        <select id="e-priority">
+          <option value="high" ${t.priority==='high'?'selected':''}>🔴 High</option>
+          <option value="medium" ${t.priority==='medium'?'selected':''}>🟡 Medium</option>
+          <option value="low" ${t.priority==='low'?'selected':''}>🟢 Low</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Due date</label><input type="date" id="e-due" value="${t.due||''}"/></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="this.closest('.modal-bg').remove()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEdit('${id}',this)">Save</button>
+    </div>
+  </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e=>{ if(e.target===modal) modal.remove(); });
+};
+
+window.saveEdit = async function(id, btn){
+  const updates = {
+    title: document.getElementById('e-title').value.trim(),
+    desc: document.getElementById('e-desc').value.trim(),
+    assignee: document.getElementById('e-assign').value,
+    priority: document.getElementById('e-priority').value,
+    due: document.getElementById('e-due').value||''
+  };
+  if(!updates.title){toast('Title required!');return;}
+  await update(ref(db,`tasks/${id}`), updates);
+  btn.closest('.modal-bg').remove();
+  toast('✅ Task updated!');
+};
+
+// ── Tabs ───────────────────────────────────
+window.setTab = function(tab, el){
+  ['admin','member','team'].forEach(t=>{
+    document.getElementById(`tab-${t}-content`).style.display = t===tab?'':'none';
+    document.getElementById(`tab-${t}`).classList.toggle('active', t===tab);
+  });
+  if(tab==='member') renderMemberView();
+};
+
+// ── Notifications ──────────────────────────
+function sendLocalNotification(title, body){
+  if(Notification.permission==='granted'){
+    if('serviceWorker' in navigator && navigator.serviceWorker.controller){
+      navigator.serviceWorker.controller.postMessage({type:'NOTIFY',title,body});
+    } else {
+      new Notification(title,{body, icon:'icon-192.png'});
+    }
+  }
+}
+
+window.requestNotifPermission = async function(){
+  const perm = await Notification.requestPermission();
+  if(perm==='granted'){
+    document.getElementById('notif-banner').style.display='none';
+    toast('🔔 Notifications enabled!');
+    scheduleReminders();
+  }
+};
+
+function checkNotifBanner(){
+  if(Notification.permission==='default'){
+    document.getElementById('notif-banner').style.display='flex';
+  }
+}
+
+// ── Reminder logic ─────────────────────────
+window.saveReminder = function(){
+  const t = document.getElementById('reminder-time').value;
+  localStorage.setItem('vb_reminder_time', t);
+  scheduleReminders();
+  toast(`⏰ Reminder set for ${t} daily`);
+  document.getElementById('reminder-status').textContent = `Daily reminder set at ${t}`;
+};
+
+function scheduleReminders(){
+  const saved = localStorage.getItem('vb_reminder_time');
+  if(!saved || Notification.permission!=='granted') return;
+  const [h,m] = saved.split(':').map(Number);
+  const now = new Date();
+  let next = new Date(); next.setHours(h,m,0,0);
+  if(next <= now) next.setDate(next.getDate()+1);
+  const delay = next - now;
+  clearTimeout(window._reminderTimeout);
+  window._reminderTimeout = setTimeout(()=>{
+    const pending = Object.values(window._tasks||{}).filter(t=>t.status==='pending').length;
+    if(pending > 0){
+      sendLocalNotification('📋 Pending Tasks Reminder', `You have ${pending} pending task${pending>1?'s':''}. Get them done!`);
+    }
+    scheduleReminders();
+  }, delay);
+}
+
+// ── PWA install ────────────────────────────
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  document.getElementById('install-btn').style.display='block';
+});
+
+window.installApp = async function(){
+  if(!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const {outcome} = await deferredInstallPrompt.userChoice;
+  if(outcome==='accepted') toast('📲 App installed!');
+  deferredInstallPrompt = null;
+  document.getElementById('install-btn').style.display='none';
+};
+
+// ── Service worker ─────────────────────────
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(e=>console.warn('SW reg failed',e));
+}
+
+// ── Init ───────────────────────────────────
+checkNotifBanner();
+const savedTime = localStorage.getItem('vb_reminder_time');
+if(savedTime){
+  document.getElementById('reminder-time').value = savedTime;
+  document.getElementById('reminder-status').textContent = `Daily reminder set at ${savedTime}`;
+  scheduleReminders();
+}
+
+// Default members if first time
+onValue(ref(db,'members'), snap=>{
+  if(!snap.val()){
+    set(ref(db,'members'), ['Ravi','Priya','Suresh','Kavya']);
+  }
+}, {onlyOnce:true});
+
+</script>
+</body>
+</html>
