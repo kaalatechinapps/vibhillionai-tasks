@@ -451,6 +451,7 @@ function renderAdminTasks(){
         ${dueBadge(t.due)}
       </div>
       ${t.desc?`<div class="tc-desc">${t.desc}</div>`:''}
+      ${t.delayReason?`<div style="background:#f59e0b15;border:1px solid #f59e0b30;border-radius:8px;padding:8px 12px;font-size:12px;color:#fbbf24;margin-bottom:8px">⏰ <strong>Delay reason:</strong> ${t.delayReason}</div>`:''}
       <div class="tc-footer">
         <span class="tc-date">${t.createdAt||''}</span>
         <div class="tc-actions">
@@ -489,6 +490,7 @@ function memberCard(t){
     </div>
     <div class="tc-meta">${prioBadge(t.priority)}${dueBadge(t.due)}</div>
     ${t.desc?`<div class="tc-desc">${t.desc}</div>`:''}
+    ${t.delayReason?`<div style="background:#f59e0b15;border:1px solid #f59e0b30;border-radius:8px;padding:8px 12px;font-size:12px;color:#fbbf24;margin-top:4px">⏰ <strong>Delay reason:</strong> ${t.delayReason}</div>`:''}
   </div>`;
 }
 
@@ -538,9 +540,45 @@ window.toggleDone = async function(id){
   const t = window._tasks[id];
   if(!t) return;
   const ns = t.status==='done'?'pending':'done';
-  await update(ref(db,`tasks/${id}`),{status:ns});
+  if(ns==='done' && isOverdue(t)){
+    showDelayModal(id, t);
+    return;
+  }
+  await update(ref(db,`tasks/${id}`),{status:ns, delayReason: ns==='pending'?'':(t.delayReason||'')});
   toast(ns==='done'?'✅ Marked done!':'↩️ Marked pending');
   if(ns==='done') sendNotif('Task completed! 🎉', t.title);
+};
+
+function showDelayModal(id, t){
+  const m = document.createElement('div');
+  m.className='modal-bg open';
+  m.innerHTML=`<div class="modal">
+    <div class="modal-title">⏰ Task Delayed</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:14px">
+      "<strong style="color:var(--text)">${t.title}</strong>" due date దాటిపోయింది.<br/>Delay reason చెప్పు:
+    </div>
+    <div class="field">
+      <label>Reason *</label>
+      <textarea id="delay-reason-input" placeholder="e.g. Content research time ekkuva padindi..." style="min-height:90px"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="this.closest(\'.modal-bg\').remove()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitDelayReason(''+id+'',this)">Submit & Mark Done</button>
+    </div>
+  </div>`;
+  document.body.appendChild(m);
+  m.addEventListener('click',e=>{if(e.target===m)m.remove();});
+  setTimeout(()=>m.querySelector('textarea').focus(),100);
+}
+
+window.submitDelayReason = async function(id, btn){
+  const reason = document.getElementById('delay-reason-input').value.trim();
+  if(!reason){toast('⚠️ Reason required!');return;}
+  const t = window._tasks[id];
+  await update(ref(db,`tasks/${id}`),{status:'done', delayReason:reason});
+  btn.closest('.modal-bg').remove();
+  toast('✅ Done! Reason saved.');
+  sendNotif('Task completed! 🎉', t.title);
 };
 
 window.delTask = async function(id){
